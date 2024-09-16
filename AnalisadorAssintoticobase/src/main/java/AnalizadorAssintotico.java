@@ -1,31 +1,37 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AnalizadorAssintotico {
 
-    // Função para analisar a complexidade assintótica
+    
     public static String analisarComplexidade(String codigoFonte) {
-        // Conta loops aninhados e recursão no código fonte
+        
         int profundidadeLoop = contarLoops(codigoFonte);
         boolean contemRecursao = contemRecursao(codigoFonte);
+        boolean contemLogaritmo = contemLogaritmo(codigoFonte);
+        boolean contemExponencial = contemExponencial(codigoFonte);
+        boolean contemFatorial = contemFatorial(codigoFonte);
         
-        if (contemRecursao) {
-            return "O comportamento do algoritmo parece recursivo, pode ser O(T(n)) dependendo da profundidade e das condições de parada.";
+        if (contemFatorial) {
+            return "O algoritmo parece ser O(n!)";
+        } else if (contemExponencial) {
+            return "O algoritmo parece ser O(2^n)";
+        } else if (contemLogaritmo) {
+            return "O algoritmo parece ser O(log n)";
+        } else if (contemRecursao) {
+            return "O comportamento do algoritmo parece recursivo, pode ser O(T(n))";
         } else if (profundidadeLoop == 1) {
-            return "O algoritmo parece ser O(n), pois contém um loop simples.";
+            return "O algoritmo parece ser O(n), pois contém um loop simples";
         } else if (profundidadeLoop == 2) {
-            return "O algoritmo parece ser O(n^2), pois contém dois loops aninhados.";
+            return "O algoritmo parece ser O(n^2), pois contém dois loops aninhados";
         } else if (profundidadeLoop > 2) {
-            return "O algoritmo parece ser O(n^" + profundidadeLoop + "), pois contém múltiplos loops aninhados.";
+            return "O algoritmo parece ser O(n^" + profundidadeLoop + "), pois contém múltiplos loops aninhados";
         } else {
-            return "Não foi possível determinar a complexidade. O algoritmo pode ser constante O(1) ou baseado em operações simples.";
+            return "O algoritmo parece ser constante O(1)";
         }
     }
 
-    // Função para contar loops no código-fonte
+    
     public static int contarLoops(String codigoFonte) {
         // Contando "for" e "while" no código
         Pattern patternFor = Pattern.compile("for\\s*\\(");
@@ -37,7 +43,7 @@ public class AnalizadorAssintotico {
         int contadorFor = 0;
         int contadorWhile = 0;
         
-        // Contagem de loops
+   
         while (matcherFor.find()) {
             contadorFor++;
         }
@@ -49,7 +55,7 @@ public class AnalizadorAssintotico {
         return contadorFor + contadorWhile;
     }
 
-    // Função para verificar se há recursão no código
+    //verificar se ah recursão no código
     public static boolean contemRecursao(String codigoFonte) {
         // Verificando se o método chama a si mesmo
         Pattern patternRecursao = Pattern.compile("executar\\s*\\(");
@@ -57,36 +63,41 @@ public class AnalizadorAssintotico {
         return matcher.find();
     }
 
-    // Função para ler o conteúdo de um arquivo de texto
-    public static String lerArquivo(String caminhoArquivo) throws IOException {
-        StringBuilder conteudo = new StringBuilder();
-        BufferedReader reader = new BufferedReader(new FileReader(caminhoArquivo));
-        String linha;
-        while ((linha = reader.readLine()) != null) {
-            conteudo.append(linha).append("\n");
-        }
-        reader.close();
-        return conteudo.toString();
+    //verificar se ah operações logarítmicas
+    public static boolean contemLogaritmo(String codigoFonte) {
+        // Verificando a presença de "log" ou padrões comuns como divisão por 2
+        Pattern patternLog = Pattern.compile("log|n\\s*/\\s*2");
+        Matcher matcher = patternLog.matcher(codigoFonte);
+        return matcher.find();
     }
 
-    // Método principal para testar
+    // verificar se há operações exponenciais
+    public static boolean contemExponencial(String codigoFonte) {
+        // Verificando a presença de potências de 2, 3, etc.
+        Pattern patternExp = Pattern.compile("2\\s*\\^|Math\\.pow\\s*\\(");
+        Matcher matcher = patternExp.matcher(codigoFonte);
+        return matcher.find();
+    }
+
+    // verificar se há operações fatoriais
+    public static boolean contemFatorial(String codigoFonte) {
+        // Verificando a presença de fatorial "n!"
+        Pattern patternFat = Pattern.compile("n\\s*!|fatorial");
+        Matcher matcher = patternFat.matcher(codigoFonte);
+        return matcher.find();
+    }
+
+
     public static void main(String[] args) {
-        if (args.length == 0) {
-            System.out.println("Por favor, forneça o caminho para o arquivo de código.");
-            return;
-        }
+        // codigo fonte para teste
+        String codigoFonte = 
+                "// Exemplo O(1)\n" +
+"int constante(int n) {\n" +
+"    return n + 10;  // Operação constante\n" +
+"}}";
 
-        String caminhoArquivo = args[0];
 
-        try {
-            // Ler o código-fonte de um arquivo txt
-            String codigoFonte = lerArquivo(caminhoArquivo);
-
-            // Analisar a complexidade do código fornecido
-            String complexidade = analisarComplexidade(codigoFonte);
-            System.out.println("Complexidade estimada: " + complexidade);
-        } catch (IOException e) {
-            System.err.println("Erro ao ler o arquivo: " + e.getMessage());
-        }
+        String complexidade = analisarComplexidade(codigoFonte);
+        System.out.println("Complexidade estimada: " + complexidade);
     }
 }
