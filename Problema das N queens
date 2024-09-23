@@ -3,7 +3,7 @@
 #include <unistd.h> // Para usleep()
 #include <stdlib.h> // Para system()
 
-#define N 20 // Defina o tamanho do tabuleiro (N x N) aqui
+#define N 8 // Defina o tamanho do tabuleiro (N x N) aqui
 
 void printSolution(int board[N][N]) {
     for (int i = 0; i < N; i++) {
