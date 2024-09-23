@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <unistd.h> // Para usleep()
+#include <stdlib.h> // Para system()
+
+#define N 20 // Defina o tamanho do tabuleiro (N x N) aqui
+
+void printSolution(int board[N][N]) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            if (board[i][j] == 1)
+                printf(" Q ");
+            else
+                printf(" . ");
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+// Função para limpar a tela e pausar por um breve intervalo
+void updateBoard(int board[N][N]) {
+    // Limpa a tela (use "clear" no Linux/Mac ou "cls" no Windows)
+    system("clear"); 
+    // Imprime o tabuleiro
+    printSolution(board);
+
+    // Pausa por 300 milissegundos (300.000 microsegundos)
+    usleep(300000); // 300 milissegundos
+}
+
+// Função para verificar se é seguro colocar uma rainha na posição (row, col)
+bool isSafe(int board[N][N], int row, int col) {
+    int i, j;
+
+    // Verifica esta coluna à esquerda
+    for (i = 0; i < row; i++)
+        if (board[i][col])
+            return false;
+
+    // Verifica a diagonal superior à esquerda
+    for (i = row, j = col; i >= 0 && j >= 0; i--, j--)
+        if (board[i][j])
+            return false;
+
+    // Verifica a diagonal superior à direita
+    for (i = row, j = col; i >= 0 && j < N; i--, j++)
+        if (board[i][j])
+            return false;
+
+    return true;
+}
+
+// Função recursiva para resolver o problema das N rainhas
+bool solveNQueensUtil(int board[N][N], int row) {
+    // Se todas as rainhas foram colocadas, retorna verdadeiro
+    if (row >= N)
+        return true;
+
+    // Considera esta linha e tenta colocar uma rainha em cada coluna
+    for (int col = 0; col < N; col++) {
+        // Verifica se é seguro colocar uma rainha na posição (row, col)
+        if (isSafe(board, row, col)) {
+            // Coloca a rainha
+            board[row][col] = 1;
+
+            // Atualiza o tabuleiro em tempo real
+            updateBoard(board);
+
+            // Faz uma chamada recursiva para colocar a próxima rainha
+            if (solveNQueensUtil(board, row + 1))
+                return true;
+
+            // Se colocar a rainha em (row, col) não leva a uma solução,
+            // remove a rainha (backtrack) e atualiza o tabuleiro
+            board[row][col] = 0;
+
+            // Atualiza o tabuleiro em tempo real
+            updateBoard(board);
+        }
+    }
+
+    // Se nenhuma solução for encontrada, retorna falso
+    return false;
+}
+
+// Função que resolve o problema das N rainhas
+bool solveNQueens() {
+    int board[N][N] = {0}; // Inicializa o tabuleiro com zeros
+
+    if (solveNQueensUtil(board, 0) == false) {
+        printf("Solução não existe\n");
+        return false;
+    }
+
+    printSolution(board); // Imprime a solução final encontrada
+    return true;
+}
+
+int main() {
+    solveNQueens();
+    return 0;
+}
