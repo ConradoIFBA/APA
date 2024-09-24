@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX_VARIABLES 10
+#define MAX_CLAUSES 10
+
+// Estrutura para armazenar uma cláusula
+typedef struct {
+    int literals[MAX_VARIABLES]; // Literais da cláusula
+    int size;                    // Número de literais na cláusula
+} Clause;
+
+// Estrutura para armazenar a expressão booleana
+typedef struct {
+    Clause clauses[MAX_CLAUSES]; // Cláusulas da expressão
+    int size;                    // Número de cláusulas
+} Expression;
+
+// Função para avaliar se a expressão é satisfeita por uma atribuição
+bool evaluateExpression(Expression *expr, bool assignment[]) {
+    for (int i = 0; i < expr->size; i++) {
+        bool satisfied = false; // Inicializa a cláusula como não satisfeita
+        for (int j = 0; j < expr->clauses[i].size; j++) {
+            int literal = expr->clauses[i].literals[j];
+            if (literal > 0) {
+                satisfied |= assignment[literal - 1]; // A variável é verdadeira
+            } else {
+                satisfied |= !assignment[-literal - 1]; // A variável é falsa
+            }
+        }
+        if (!satisfied) {
+            return false; // Se alguma cláusula não for satisfeita, retorna falso
+        }
+    }
+    return true; // Todas as cláusulas foram satisfeitas
+}
+
+// Função para verificar se a expressão booleana é satisfatível
+bool isSatisfiable(Expression *expr) {
+    int n = MAX_VARIABLES; // Número máximo de variáveis
+    int combinations = 1 << n; // 2^n combinações possíveis
+
+    for (int i = 0; i < combinations; i++) {
+        bool assignment[MAX_VARIABLES];
+        for (int j = 0; j < n; j++) {
+            assignment[j] = (i & (1 << j)) != 0; // Gera atribuições booleanas
+        }
+        if (evaluateExpression(expr, assignment)) {
+            return true; // Se a expressão é satisfeita, retorna verdadeiro
+        }
+    }
+    return false; // Nenhuma atribuição satisfez a expressão
+}
+
+// Função principal
+int main() {
+    Expression expr;
+    expr.size = 2;
+
+    // Cláusula 1: (A ∨ ¬B)
+    expr.clauses[0].size = 2;
+    expr.clauses[0].literals[0] = 1;  // A
+    expr.clauses[0].literals[1] = -2; // ¬B
+
+    // Cláusula 2: (B ∨ C)
+    expr.clauses[1].size = 2;
+    expr.clauses[1].literals[0] = 2;  // B
+    expr.clauses[1].literals[1] = 3;  // C
+
+    // Verifica se a expressão é satisfatível
+    if (isSatisfiable(&expr)) {
+        printf("A expressão é satisfatível.\n");
+    } else {
+        printf("A expressão não é satisfatível.\n");
+    }
+
+    return 0;
+}
