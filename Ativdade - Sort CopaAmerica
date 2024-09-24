@@ -1,0 +1,76 @@
+//Algoritmo de organizaçao da Copa America
+#include <stdio.h>
+#include <string.h>
+
+#define MAX 8
+
+typedef struct {
+  char name[30];
+  int points;
+} times;
+
+void printTeams(times teams[], int tam) {
+  for (int i = 0; i < tam; i++) {
+    printf("%d. %s - %d pontos\n", i + 1, teams[i].name, teams[i].points);
+  }
+}
+
+void sortTeamsPontos(times teams[], int tam, int cresc) {
+  for (int i = 0; i < tam - 1; i++) {
+    for (int j = 0; j < tam - i - 1; j++) {
+      if ((cresc && teams[j].points > teams[j + 1].points) ||
+          (!cresc && teams[j].points < teams[j + 1].points)) {
+        times temp = teams[j];
+        teams[j] = teams[j + 1];
+        teams[j + 1] = temp;
+      }
+    }
+  }
+}
+
+void sortTeamsNomes(times teams[], int tam) {
+  for (int i = 0; i < tam - 1; i++) {
+    for (int j = 0; j < tam - i - 1; j++) {
+      if (strcmp(teams[j].name, teams[j + 1].name) > 0) {
+        times temp = teams[j];
+        teams[j] = teams[j + 1];
+        teams[j + 1] = temp;
+      }
+    }
+  }
+}
+
+int main() {
+  times teams[MAX] = {{"Argentina", 9}, {"Uruguay", 9}, {"Venezuela", 9},
+                      {"Panama", 6},    {"Canada", 4},  {"Ecuador", 4},
+                      {"Mexico", 4},    {"Chile", 2}};
+
+  int op;
+
+  printf("Selecione o tipo de ordenação:\n");
+  printf("1. Crescente (por pontos)\n");
+  printf("2. Decrescente (por pontos)\n");
+  printf("3. Alfabética (por nome)\n");
+  printf("Escolha: ");
+  scanf("%d", &op);
+
+  switch (op) {
+  case 1:
+    sortTeamsPontos(teams, MAX, 1);
+    break;
+  case 2:
+    sortTeamsPontos(teams, MAX, 0);
+    break;
+  case 3:
+    sortTeamsNomes(teams, MAX);
+    break;
+  default:
+    printf("Escolha inválida!\n");
+    return 1;
+  }
+
+  printf("\nTop 8 da Copa América 2024:\n");
+  printTeams(teams, MAX);
+
+  return 0;
+}
