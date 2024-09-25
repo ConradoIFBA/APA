@@ -1,0 +1,189 @@
+//criar um algoritmo de busca e ordenaçao com nome e id
+
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_PRODUTOS 100
+#define MAX_NOME 50
+
+// Definindo a estrutura Produto
+typedef struct {
+    int id;
+    char nome[MAX_NOME];
+    float preco;
+} Produto;
+
+// Função para exibir a lista de produtos
+void exibirProdutos(Produto produtos[], int n) {
+    printf("Lista de Produtos:\n");
+    for (int i = 0; i < n; i++) {
+        printf("ID: %d, Nome: %s, Preço: %.2f\n", produtos[i].id, produtos[i].nome, produtos[i].preco);
+    }
+}
+
+// Função para buscar um produto pelo nome
+int buscarProduto(Produto produtos[], int n, const char *nome) {
+    for (int i = 0; i < n; i++) {
+        if (strcmp(produtos[i].nome, nome) == 0) {
+            return i;  // Retorna o índice do produto encontrado
+        }
+    }
+    return -1;  // Retorna -1 se não encontrar
+}
+
+// Função para ordenar produtos por ID (Bubble Sort)
+void ordenarProdutosPorId(Produto produtos[], int n) {
+    Produto temp;
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (produtos[j].id > produtos[j + 1].id) {
+                temp = produtos[j];
+                produtos[j] = produtos[j + 1];
+                produtos[j + 1] = temp;
+            }
+        }
+    }
+}
+
+// Função para ordenar produtos por nome (alfabético)
+void ordenarProdutosPorNome(Produto produtos[], int n) {
+    Produto temp;
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (strcmp(produtos[j].nome, produtos[j + 1].nome) > 0) {
+                temp = produtos[j];
+                produtos[j] = produtos[j + 1];
+                produtos[j + 1] = temp;
+            }
+        }
+    }
+}
+
+// Função para ordenar produtos por preço
+void ordenarProdutosPorPreco(Produto produtos[], int n) {
+    Produto temp;
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (produtos[j].preco > produtos[j + 1].preco) {
+                temp = produtos[j];
+                produtos[j] = produtos[j + 1];
+                produtos[j + 1] = temp;
+            }
+        }
+    }
+}
+
+// Função para inserir um novo produto
+void inserirProduto(Produto produtos[], int *n) {
+    if (*n >= MAX_PRODUTOS) {
+        printf("Limite de produtos atingido.\n");
+        return;
+    }
+
+    printf("Digite o ID do produto: ");
+    scanf("%d", &produtos[*n].id);
+    printf("Digite o nome do produto: ");
+    scanf("%s", produtos[*n].nome);
+    printf("Digite o preço do produto: ");
+    scanf("%f", &produtos[*n].preco);
+    (*n)++;
+}
+
+// Função para remover um produto pelo ID
+void removerProduto(Produto produtos[], int *n, int id) {
+    int i, encontrado = 0;
+    for (i = 0; i < *n; i++) {
+        if (produtos[i].id == id) {
+            encontrado = 1;
+            break;
+        }
+    }
+
+    if (encontrado) {
+        for (int j = i; j < *n - 1; j++) {
+            produtos[j] = produtos[j + 1];
+        }
+        (*n)--;
+        printf("Produto removido com sucesso.\n");
+    } else {
+        printf("Produto com ID %d não encontrado.\n", id);
+    }
+}
+
+int main() {
+    Produto produtos[MAX_PRODUTOS];
+    int n = 0;  // Número de produtos
+    int opcao, id;
+    char nomeBusca[MAX_NOME];
+
+    do {
+        printf("\nMenu:\n");
+        printf("1 - Inserir produto\n");
+        printf("2 - Remover produto\n");
+        printf("3 - Buscar produto\n");
+        printf("4 - Ordenar produtos\n");
+        printf("5 - Imprimir produtos\n");
+        printf("0 - Sair\n");
+        printf("Digite a opcao desejada: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                inserirProduto(produtos, &n);
+                break;
+
+            case 2:
+                printf("Digite o ID do produto a ser removido: ");
+                scanf("%d", &id);
+                removerProduto(produtos, &n, id);
+                break;
+
+            case 3:
+                printf("Digite o nome do produto para buscar: ");
+                scanf("%s", nomeBusca);
+                int indice = buscarProduto(produtos, n, nomeBusca);
+                if (indice != -1) {
+                    printf("Produto encontrado: ID: %d, Nome: %s, Preço: %.2f\n", produtos[indice].id, produtos[indice].nome, produtos[indice].preco);
+                } else {
+                    printf("Produto não encontrado.\n");
+                }
+                break;
+
+            case 4: {
+                int criterioOrdenacao;
+                printf("Escolha o critério de ordenação:\n");
+                printf("1 - Por ID\n");
+                printf("2 - Por nome (alfabético)\n");
+                printf("3 - Por preço\n");
+                printf("Digite o critério desejado: ");
+                scanf("%d", &criterioOrdenacao);
+
+                if (criterioOrdenacao == 1) {
+                    ordenarProdutosPorId(produtos, n);
+                } else if (criterioOrdenacao == 2) {
+                    ordenarProdutosPorNome(produtos, n);
+                } else if (criterioOrdenacao == 3) {
+                    ordenarProdutosPorPreco(produtos, n);
+                } else {
+                    printf("Critério inválido!\n");
+                }
+                break;
+            }
+
+            case 5:
+                exibirProdutos(produtos, n);
+                break;
+
+            case 0:
+                printf("Saindo...\n");
+                break;
+
+            default:
+                printf("Opcao inválida!\n");
+                break;
+        }
+
+    } while (opcao != 0);
+
+    return 0;
+}
