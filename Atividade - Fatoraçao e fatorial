@@ -1,0 +1,44 @@
+#include <stdio.h>
+
+// Função para calcular o fatorial de um número
+unsigned long long fatorial(int n) {
+    unsigned long long resultado = 1;
+    for (int i = 2; i <= n; i++) {
+        resultado *= i;
+    }
+    return resultado;
+}
+
+// Função para fatorar o número (decomposição em fatores primos)
+void fatoracao(int n) {
+    printf("Fatores primos de %d: ", n);
+    for (int i = 2; i <= n; i++) {
+        while (n % i == 0) {
+            printf("%d ", i);
+            n /= i;
+        }
+    }
+    printf("\n");
+}
+
+int main() {
+    int numero;
+
+    // Entrada de um número pelo usuário
+    printf("Digite um número inteiro positivo: ");
+    scanf("%d", &numero);
+
+    // Verifica se o número é válido
+    if (numero < 0) {
+        printf("O número deve ser um inteiro positivo.\n");
+        return 1;
+    }
+
+    // Cálculo do fatorial
+    printf("Fatorial de %d é: %llu\n", numero, fatorial(numero));
+
+    // Cálculo da fatoração
+    fatoracao(numero);
+
+    return 0;
+}
